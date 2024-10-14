@@ -5,7 +5,7 @@
     "description": "This is an Express API for managing a collection of movies and directors",
     "version": "1.0.0"
   },
-  "host": "localhost:3000",
+  "host": "cse342-project2.onrender.com",
   "basePath": "/",
   "tags": [
     {
