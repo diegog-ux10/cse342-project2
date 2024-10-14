@@ -1,7 +1,5 @@
 const express = require('express');
 const dotenv = require('dotenv');
-const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('./swagger.json');
 const routes = require('./routes');
 const errorHandler = require('./middleware/errorHandler');
 const { initDb } = require('./database/database');
@@ -12,9 +10,6 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(express.json());
-
-// Serve Swagger UI
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 initDb((err, db) => {
   if (err) {
