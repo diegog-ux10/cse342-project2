@@ -23,7 +23,6 @@ initDb((err, db) => {
 
     app.listen(port, () => {
       console.log(`Server is running on port ${port}`);
-      console.log(`Swagger UI is available at http://localhost:${port}/api-docs`);
     });
   }
 });
