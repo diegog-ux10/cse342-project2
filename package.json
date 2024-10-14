@@ -1,0 +1,23 @@
+{
+  "name": "cse342-project2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "swagger-autogen": "node swagger.js"
+  },
+  "author": "Diego Granados",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "mongodb": "^6.9.0",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7",
+    "swagger-autogen": "^2.23.7"
+  }
+}
