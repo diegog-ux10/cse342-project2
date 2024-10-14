@@ -1,0 +1,111 @@
+@baseUrl = http://localhost:3000
+@authToken = YOUR_AUTH_TOKEN_HERE
+
+### Authentication
+
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "your_username",
+  "password": "your_password"
+}
+
+###
+
+# After running the login request, you can use the response to set the authToken variable
+@authToken = {{login.response.body.token}}
+
+### Movies
+
+# Get all movies
+GET {{baseUrl}}/movies
+
+###
+
+# Get a specific movie
+GET {{baseUrl}}/movies/MOVIE_ID_HERE
+
+###
+
+# Create a new movie
+POST {{baseUrl}}/movies
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "title": "Inception",
+  "director": "DIRECTOR_ID_HERE",
+  "releaseYear": 2010,
+  "genre": ["Science Fiction", "Action"],
+  "rating": 8.8,
+  "duration": 148,
+  "cast": ["Leonardo DiCaprio", "Joseph Gordon-Levitt", "Ellen Page"]
+}
+
+###
+
+# Update a movie
+PUT {{baseUrl}}/movies/MOVIE_ID_HERE
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "title": "Inception",
+  "director": "DIRECTOR_ID_HERE",
+  "releaseYear": 2010,
+  "genre": ["Science Fiction", "Action", "Thriller"],
+  "rating": 8.9,
+  "duration": 148,
+  "cast": ["Leonardo DiCaprio", "Joseph Gordon-Levitt", "Ellen Page", "Tom Hardy"]
+}
+
+###
+
+# Delete a movie
+DELETE {{baseUrl}}/movies/MOVIE_ID_HERE
+Authorization: Bearer {{authToken}}
+
+### Directors
+
+# Get all directors
+GET {{baseUrl}}/directors
+
+###
+
+# Get a specific director
+GET {{baseUrl}}/directors/DIRECTOR_ID_HERE
+
+###
+
+# Create a new director
+POST {{baseUrl}}/directors
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Christopher Nolan",
+  "birthYear": 1970,
+  "nationality": "British-American"
+}
+
+###
+
+# Update a director
+PUT {{baseUrl}}/directors/DIRECTOR_ID_HERE
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Christopher Nolan",
+  "birthYear": 1970,
+  "nationality": "British-American",
+  "awards": ["Academy Award for Best Director"]
+}
+
+###
+
+# Delete a director
+DELETE {{baseUrl}}/directors/DIRECTOR_ID_HERE
+Authorization: Bearer {{authToken}}
