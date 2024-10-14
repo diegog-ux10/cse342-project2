@@ -5,10 +5,10 @@
     "description": "This is a simple Express API for managing Movies and Directors.",
     "version": "1.0.0"
   },
-  "host": "localhost:3000",
+  "host": "cse342-project2.onrender.com",
   "basePath": "/",
   "schemes": [
-    "http"
+    "https"
   ],
   "tags": [
     {
