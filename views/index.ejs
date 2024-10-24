@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0d1117;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 24px;
+            width: 100%;
+            max-width: 320px;
+            text-align: center;
+        }
+
+        .github-logo {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 16px;
+            color: white;
+            display: block;
+        }
+
+        h1 {
+            font-size: 20px;
+            margin-bottom: 24px;
+            font-weight: 600;
+        }
+
+        .status-box {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 16px;
+            color: #8b949e;
+            font-size: 14px;
+        }
+
+        .login-button {
+            background: #238636;
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 6px;
+            width: 100%;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-block;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .login-button:hover {
+            background: #2ea043;
+        }
+
+        .logout-button {
+            background: #da3633;
+        }
+
+        .logout-button:hover {
+            background: #f85149;
+        }
+
+        .profile-box {
+            background: rgba(35, 134, 54, 0.1);
+            border: 1px solid rgba(35, 134, 54, 0.4);
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .profile-image {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            display: block;
+            border: 2px solid #238636;
+        }
+
+        .user-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .footer {
+            margin-top: 24px;
+            color: #8b949e;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .lock-icon {
+            width: 14px;
+            height: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <!-- GitHub Logo -->
+        <svg class="github-logo" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+        </svg>
+        <h1>Sign in to GitHub</h1>
+
+        <% if (user) { %>
+            <div class="profile-box">
+                <img src="https://github.com/<%= user.username || 'github' %>.png" 
+                     alt="Profile" 
+                     class="profile-image">
+                <p class="user-name"><%= user.displayName %></p>
+            </div>
+            <a href="/auth/logout" class="login-button logout-button">Sign out</a>
+        <% } else { %>
+            <div class="status-box">
+                Please sign in to continue
+            </div>
+            <a href="/oauth/login" class="login-button">
+                Continue with GitHub
+            </a>
+        <% } %>
+
+        <div class="footer">
+            <svg class="lock-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8V7m-6 4h2"/>
+            </svg>
+            Secure GitHub authentication
+        </div>
+    </div>
+</body>
+</html>
