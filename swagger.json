@@ -29,7 +29,7 @@
     }
   ],
   "paths": {
-    "/login": {
+    "/oauth/login": {
       "get": {
         "tags": ["OAuth"],
         "description": "Initiates GitHub OAuth authentication flow",
@@ -40,7 +40,7 @@
         }
       }
     },
-    "/github/callback": {
+    "/oauth/github/callback": {
       "get": {
         "tags": ["OAuth"],
         "description": "GitHub OAuth callback endpoint",
