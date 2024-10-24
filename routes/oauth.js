@@ -3,7 +3,7 @@ const passport = require('passport');
 
 router.get('/login', passport.authenticate('github'), (req, res) => {});
 
-app.get('/github/callback', 
+router.get('/github/callback', 
   passport.authenticate('github', { failureRedirect: '/login' }),
   (req, res) => {
     // Explicitly set user in session
@@ -22,4 +22,5 @@ app.get('/github/callback',
     });
   }
 );
+
 module.exports = router;
