@@ -22,9 +22,54 @@
     {
       "name": "Directors",
       "description": "API endpoints for managing directors"
+    },
+    {
+      "name": "OAuth",
+      "description": "GitHub OAuth authentication endpoints"
     }
   ],
   "paths": {
+    "/login": {
+      "get": {
+        "tags": ["OAuth"],
+        "description": "Initiates GitHub OAuth authentication flow",
+        "responses": {
+          "302": {
+            "description": "Redirects to GitHub login page"
+          }
+        }
+      }
+    },
+    "/github/callback": {
+      "get": {
+        "tags": ["OAuth"],
+        "description": "GitHub OAuth callback endpoint",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "description": "GitHub authorization code"
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "State parameter for security validation"
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Successful authentication - redirects to home page"
+          },
+          "401": {
+            "description": "Authentication failed"
+          }
+        }
+      }
+    },
     "/auth/register": {
       "post": {
         "tags": ["Auth"],
@@ -416,6 +461,18 @@
             "description": "Not Found"
           }
         }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "githubOAuth": {
+      "type": "oauth2",
+      "authorizationUrl": "https://github.com/login/oauth/authorize",
+      "tokenUrl": "https://github.com/login/oauth/access_token",
+      "flow": "accessCode",
+      "scopes": {
+        "user": "Read user information",
+        "user:email": "Access user email addresses"
       }
     }
   },
