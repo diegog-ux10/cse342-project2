@@ -1,85 +1,75 @@
-// server.js
 const express = require('express');
 const dotenv = require('dotenv');
 const routes = require('./routes');
 const errorHandler = require('./middleware/errorHandler');
 const { initDb } = require('./database/database');
-const helmet = require('helmet'); // Add this dependency
+const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const session = require('express-session');
 const GitHubStrategy = require('passport-github2').Strategy;
 const cors = require('cors');
 
+// Load environment variables first
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.set('trust proxy', 1); // Trust the first proxy
-// Security middleware
+// 1. Essential middleware
+app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: '10kb' }));
+
+// 2. Security middleware
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", 'https:'],
-      imgSrc: ["'self'", 'data:', 'https://github.com', 'https://*.githubusercontent.com'], // Add GitHub domains
+      imgSrc: ["'self'", 'data:', 'https://github.com', 'https://*.githubusercontent.com'],
       scriptSrc: ["'self'", "'unsafe-inline'", 'https:'],
       fontSrc: ["'self'", 'https:', 'data:'],
     },
   }
 }));
 
-// Session configuration with security best practices
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'default',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: process.env.NODE_ENV === 'production', // Only use secure cookies in production
-    httpOnly: true,
-    sameSite: 'lax',
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
-  },
-  proxy: true // Trust the reverse proxy
-}));
-
-app.use((req, res, next) => {
-  console.log('Session:', {
-    id: req.sessionID,
-    user: req.session.user,
-    authenticated: req.isAuthenticated()
-  });
-  next();
-});
-
-// Body parser configuration with size limits
-app.use(bodyParser.json({ limit: '10kb' }));
-app.use(express.json({ limit: '10kb' }));
-
-// Passport configuration
-app.use(passport.initialize());
-app.use(passport.session());
-
-// CORS configuration
+// 3. CORS configuration (before session)
 const corsOptions = {
   origin: process.env.NODE_ENV === 'production'
-    ? process.env.ALLOWED_ORIGINS.split(',')
+    ? process.env.ALLOWED_ORIGINS?.split(',')
     : '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
   credentials: true,
   maxAge: 3600
 };
-
 app.use(cors(corsOptions));
 
-// GitHub OAuth Strategy
+// 4. Session configuration (before passport)
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'default',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    sameSite: 'lax',
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  },
+  proxy: true // Add this if behind a reverse proxy
+}));
+
+// 5. Passport initialization (after session)
+app.use(passport.initialize());
+app.use(passport.session());
+
+// 6. Passport configuration
 passport.use(new GitHubStrategy({
   clientID: process.env.GITHUB_CLIENT_ID,
   clientSecret: process.env.GITHUB_CLIENT_SECRET,
-  callbackURL:  process.env.CALLBACK_URL,  // Hardcode temporarily for testing
-  passReqToCallback: true  // Add this to get more context
+  callbackURL: process.env.CALLBACK_URL,
+  passReqToCallback: true
 },
   function (request, accessToken, refreshToken, profile, done) {
     console.log('Authentication callback received');
@@ -88,36 +78,43 @@ passport.use(new GitHubStrategy({
 ));
 
 passport.serializeUser((user, done) => {
-  // Store minimal user data
-  const sessionUser = {
-    id: user.id,
-    username: user.username,
-    displayName: user.displayName
-  };
-  console.log('Serializing user:', sessionUser);
-  done(null, sessionUser);
+  console.log('Serializing user:', user);
+  done(null, user);
 });
 
-passport.deserializeUser((sessionUser, done) => {
-  console.log('Deserializing user:', sessionUser);
-  done(null, sessionUser);
+passport.deserializeUser((user, done) => {
+  console.log('Deserializing user:', user);
+  done(null, user);
 });
 
+// 7. View engine setup
 app.set('view engine', 'ejs');
 app.set('views', './views');
 
-// Routes
-app.get('/', (req, res) => {
-  console.log('Home route - Session:', {
-    id: req.sessionID,
-    user: req.session.user,
-    authenticated: req.isAuthenticated()
+// 8. Debug middleware (optional, but helpful)
+if (process.env.NODE_ENV !== 'production') {
+  app.use((req, res, next) => {
+    console.log('Session:', {
+      id: req.sessionID,
+      user: req.session.user,
+      authenticated: req.isAuthenticated ? req.isAuthenticated() : false
+    });
+    next();
   });
-  
+}
+
+// 9. Routes
+app.get('/', (req, res) => {
   res.render('index', { 
-    user: req.session.user || null 
+    user: req.session.user || req.user // Check both session.user and passport's user
   });
 });
+
+// 10. Main routes
+app.use('/', routes);
+
+// 11. Error handler (should be last)
+app.use(errorHandler);
 
 // Database initialization and server start
 initDb((err, db) => {
@@ -127,9 +124,6 @@ initDb((err, db) => {
   }
 
   console.log('Connected to MongoDB');
-
-  app.use('/', routes);
-  app.use(errorHandler);
 
   // Error handling for uncaught exceptions
   process.on('uncaughtException', (error) => {
