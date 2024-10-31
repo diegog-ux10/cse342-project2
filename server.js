@@ -73,6 +73,7 @@ passport.use(new GitHubStrategy({
 },
   function (request, accessToken, refreshToken, profile, done) {
     console.log('Authentication callback received');
+    console.log('GitHub profile:', profile);
     return done(null, profile);
   }
 ));
@@ -105,8 +106,9 @@ if (process.env.NODE_ENV !== 'production') {
 
 // 9. Routes
 app.get('/', (req, res) => {
+  console.log('User data in req:', req.user);
   res.render('index', { 
-    user: req.session.user || req.user // Check both session.user and passport's user
+    user: req.session.user || req.user
   });
 });
 
